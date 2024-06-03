@@ -1,0 +1,171 @@
+/*
+ * Copyright 2022 Agnostiq Inc.
+ * Note: This file is subject to a proprietary license agreement entered into between
+ * you (or the person or organization that you represent) and Agnostiq Inc. Your rights to
+ * access and use this file is subject to the terms and conditions of such agreement.
+ * Please ensure you carefully review such agreements and, if you have any questions
+ * please reach out to Agnostiq at: [support@agnostiq.com].
+ */
+
+.mainContainer {
+	padding: 2rem 2.375rem 0rem 6.25rem;
+}
+
+.graphContainer {
+	padding: 2rem 0rem 0rem 6.25rem;
+}
+
+body {
+	overflow-x: hidden;
+	height: 100vh;
+}
+
+#root {
+	height: 100%;
+}
+
+.MuiPaper-root {
+	scrollbar-width: thin;
+	/* Set the width of the scrollbar */
+	scrollbar-color: #1c1c46 #323267;
+	scroll-behavior: smooth;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	scrollbar-width: thin !important;
+	scrollbar-color: #1c1c46 #08081a;
+}
+
+/* don't show handles */
+.react-flow {
+	background: #08081a;
+}
+
+.react-flow__handle {
+	visibility: hidden;
+}
+
+/* adjust handle for edge positioning */
+.react-flow__handle-bottom {
+	bottom: 0px !important;
+}
+
+.react-flow__handle-top {
+	top: 0px !important;
+}
+
+.react-flow__handle-left {
+	left: 0px !important;
+}
+
+.react-flow__handle-right {
+	right: 0px !important;
+}
+
+.tableHeaderSelect .MuiOutlinedInput-root {
+	padding: 0px;
+}
+
+.tableHeaderSelect .MuiSelect-select {
+	padding-left: 1rem !important;
+}
+
+.apexcharts-tooltip.apexcharts-theme-light {
+	border-radius: 8px;
+	border: 1px solid #1c1c46 !important;
+	background: #303067 !important;
+	padding: 4px 8px;
+	font-size: 12px;
+}
+
+.apexcharts-legend-series .apexcharts-legend-marker {
+	width: 12px !important;
+	height: 12px !important;
+	border-radius: 4px !important;
+}
+
+.apexcharts-legend-series .apexcharts-legend-text {
+	color: white !important;
+	top: -1px;
+	padding-left: 25px;
+}
+
+.apexcharts-legend {
+	top: 10px !important;
+	overflow: hidden !important;
+	/* top: 50% !important;
+	transform: translate(-50%, -50%); */
+}
+
+.onelineWarp {
+	display: block;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.backToTop {
+	background: #1c1c46;
+	border-radius: 8px;
+	bottom: 25px;
+	right: 25px;
+	position: fixed;
+}
+
+.backToTop button {
+	border: 1px solid #1c1c46;
+	border-radius: 8px;
+	background: #08081a;
+	padding: 10px;
+	color: white;
+}
+
+/* react date picker style */
+
+.react-datepicker {
+	background-color: #08081a !important;
+	border: 2px solid #1c1c46 !important;
+}
+
+.react-datepicker__header {
+	background-color: #161639 !important;
+	border: 2px solid #1c1c46 !important;
+}
+
+.react-datepicker__current-month,
+.react-datepicker__day-name {
+	color: white !important;
+}
+
+.react-datepicker__day {
+	color: white !important;
+}
+
+.react-datepicker__day--keyboard-selected {
+	background: #8b31ff !important;
+	color: white !important;
+}
+
+.tableHeaderSelect .MuiSvgIcon-root {
+	top: 6px;
+}
+
+.preWrapCls code {
+	white-space: pre-wrap !important;
+}
+
+.tabComponentTable th {
+	font-size: 12px !important;
+}
+
+#Field-countryInput option {
+	background: white;
+	padding: 2px;
+}
+
+iframe#webpack-dev-server-client-overlay {
+	display: none !important
+}
