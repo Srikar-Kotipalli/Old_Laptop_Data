@@ -1,0 +1,8 @@
+Shipment:
+
+One packet hdr has multiple pct details,
+Each carton hdr is for each pct detail.
+
+PIX:
+
+PIX based on the order type of the files will be determined.

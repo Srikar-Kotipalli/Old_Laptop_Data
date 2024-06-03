@@ -1,0 +1,156 @@
+1. Add new Enterprise System SMPL.
+2. Do the mapping of the new IL system in Interface table.
+3. Create a new source file location and processed location
+
+
+SELECT * FROM TBL_IL_ENTERPRISE_SYSTEM
+
+SELECT * FROM TBL_IL_INTERFACE_TYPE
+
+SELECT * FROM TBL_IL_INTERFACE WHERE EnterpriseSystem_ID = 10
+
+SELECT * FROM TBL_IL_INTERFACE WHERE Interface_ID = 48
+
+SELECT * FROM TBL_IL_TXT_INTERFACE WHERE Interface_ID = 115
+
+INSERT INTO TBL_IL_INBOUND_INTERFACE_PROCESS
+VALUES(49,120,121,'SMPL_WMS_0006_SLS',0,0,NULL,NULL,NULL,NULL,NULL)
+
+SELECT * FROM TBL_IL_WMOS_INBOUND WHERE TXT_Interface_ID IN (SELECT TXT_Interface_ID FROM TBL_IL_TXT_INTERFACE WHERE Interface_ID = 115)
+
+SELECT * FROM TBL_IL_XML_INTERFACE WHERE Interface_ID = 48
+
+
+SCRIPT FOR INSERTING TXT HEADERS:
+
+--HERE @FOREIGN_KEY IS THE Interface_ID
+
+FOR NO AUTO INCREMENT PRIMARY KEY:
+
+DECLARE @FOREIGN_KEY INT = 120;
+DECLARE @DESCRIPTION VARCHAR = 'SMPL_WMS_0006';
+DECLARE @PRIMARY_KEY INT = (SELECT MAX(TXT_Interface_ID) FROM TBL_IL_TXT_INTERFACE);
+
+IF NOT EXISTS(SELECT 1 FROM TBL_IL_TXT_INTERFACE WHERE Interface_ID = 120)
+BEGIN
+INSERT INTO TBL_IL_TXT_INTERFACE
+(TXT_Interface_ID,Interface_ID,TXT_Interface_Column_Header,TXT_Interface_Sno,TXT_Interface_Column_Type,TXT_Interface_Column_Size,TXT_Interface_Validation_Flag,TXT_Interface_Validation_FunctionName,TXT_Interface_Column_Desc)
+SELECT
+@PRIMARY_KEY + ROW_NUMBER() OVER(ORDER BY (SELECT NULL)),
+@FOREIGN_KEY,
+TXT_Interface_Column_Header,
+TXT_Interface_Sno,
+TXT_Interface_Column_Type,
+TXT_Interface_Column_Size,
+TXT_Interface_Validation_Flag,
+TXT_Interface_Validation_FunctionName,
+@DESCRIPTION
+FROM TBL_IL_TXT_INTERFACE WHERE Interface_ID = 115;
+END;
+
+
+
+SCRIPT FOR INSERTING XML NODES:
+
+DECLARE @FOREIGN_KEY1 INT = 120;
+DECLARE @DESCRIPTION1 VARCHAR = 'SMPL_WMS_0006';
+DECLARE @PRIMARY_KEY1 INT = (SELECT MAX(XML_Interface_ID) FROM TBL_IL_XML_INTERFACE);
+
+
+IF NOT EXISTS (SELECT * FROM TBL_IL_XML_INTERFACE WHERE Interface_ID = 121)
+BEGIN
+INSERT INTO TBL_IL_XML_INTERFACE
+(XML_Interface_ID,Interface_ID,XML_Interface_Node_XPath,XML_Interface_Sno,XML_Interface_Node_Name,XML_Interface_Node_Type,XML_Interface_Node_Size,XML_Interface_Validation_Flag,XML_Interface_Validation_FunctionName,XML_Interface_Node_Desc)
+SELECT
+@PRIMARY_KEY + ROW_NUMBER() OVER(ORDER BY (SELECT NULL)),
+@FOREIGN_KEY,
+XML_Interface_Node_XPath,
+XML_Interface_Sno,
+XML_Interface_Node_Name,
+XML_Interface_Node_Type,
+XML_Interface_Node_Size,
+XML_Interface_Validation_Flag,
+XML_Interface_Validation_FunctionName,
+@DESCRIPTION
+FROM TBL_IL_XML_INTERFACE WHERE Interface_ID = 116;
+END;
+
+
+
+
+--SCRIPT FOR THE WMOS_INBOUND MAPPING
+
+
+
+
+-- TABLE WITH MKPL MAPPING
+DECLARE @ExistingMappings TABLE (
+	XML_Interface_ID INT, XML_Interface_Node_Name VARCHAR(MAX), TXT_Interface_ID INT, TXT_Interface_Column_Header NVARCHAR(MAX), Constant_ID INT
+)
+
+
+-- TABLE WITH THE NEW MAPPINGS FOR SMPL
+DECLARE @NewMappings TABLE (
+WMOS_Inbound_ID INT, Interface_Process_ID INT, New_XML_Interface_ID INT, New_TXT_Interface_ID INT, Constant_ID INT
+)
+
+
+-- EXISTING DATA
+INSERT INTO @ExistingMappings(XML_Interface_ID, XML_Interface_Node_Name,TXT_Interface_ID,TXT_Interface_Column_Header,Constant_ID)
+SELECT w.XML_Interface_ID, x.XML_Interface_Node_Name , w.TXT_Interface_ID, t.TXT_Interface_Column_Header, w.Constant_ID
+FROM TBL_IL_WMOS_INBOUND w
+LEFT JOIN TBL_IL_TXT_INTERFACE t ON w.TXT_Interface_ID = t.TXT_Interface_ID
+LEFT JOIN TBL_IL_XML_INTERFACE x ON w.XML_Interface_ID = x.XML_Interface_ID
+WHERE w.Interface_Process_ID = 48;
+
+--SELECT * FROM #ExistingMappings;  --EXISITNG MKPL MAPPINGS
+--SELECT * FROM TBL_IL_WMOS_INBOUND WHERE Interface_Process_ID = 49
+
+
+-- NEW DATA WITH NEW MAPPING BUT WITH EXISTING CONSTANT_ID
+INSERT INTO @NewMappings(WMOS_Inbound_ID,Interface_Process_ID,New_XML_Interface_ID,New_TXT_Interface_ID,Constant_ID)
+SELECT 
+    (SELECT MAX(WMOS_Inbound_ID) FROM TBL_IL_WMOS_INBOUND) + ROW_NUMBER() OVER(ORDER BY (SELECT NULL)) AS WMOS_Inbound_ID,
+	49,
+    x.XML_Interface_ID,
+    t.TXT_Interface_ID,
+	em.Constant_ID
+FROM @ExistingMappings em
+LEFT JOIN TBL_IL_XML_INTERFACE x 
+    ON em.XML_Interface_Node_Name = x.XML_Interface_Node_Name 
+    AND x.Interface_ID = 121
+LEFT JOIN TBL_IL_TXT_INTERFACE t 
+    ON em.TXT_Interface_Column_Header = t.TXT_Interface_Column_Header 
+    AND t.Interface_ID = 120
+
+
+	--SELECT * FROM @NewMappings
+
+--INSERTING THE DATA
+
+IF NOT EXISTS (SELECT 1 FROM TBL_IL_WMOS_INBOUND WHERE Interface_Process_ID = 49)
+BEGIN
+    INSERT INTO TBL_IL_WMOS_INBOUND (WMOS_INBOUND_ID, Interface_Process_ID, XML_Interface_ID, TXT_Interface_ID, Constant_ID)
+    SELECT
+        nm.WMOS_Inbound_ID,
+        nm.Interface_Process_ID,
+        nm.New_XML_Interface_ID,
+        nm.New_TXT_Interface_ID,
+        nm.Constant_ID
+    FROM @NewMappings AS nm;
+END;
+
+
+-- INSERT FOR THE ENTRY OF NEW VARIABLES FOR THE NEW INTERFACE PROCESS
+
+IF NOT EXISTS (SELECT 1 FROM TBL_IL_INBOUND_CONFIG_MASTER WHERE INBOUND_INTERFACE_PROCESS_ID = 49 )
+BEGIN
+INSERT INTO TBL_IL_INBOUND_CONFIG_MASTER
+SELECT 
+	49,
+	VARIABLE_NAME,
+	VARIABLE_VALUE,
+	'SMPL_WMS_0006'
+	FROM TBL_IL_INBOUND_CONFIG_MASTER
+	WHERE INBOUND_INTERFACE_PROCESS_ID = 48
+END;

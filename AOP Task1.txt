@@ -1,0 +1,30 @@
+/****** Script for SelectTopNRows command from SSMS  ******/
+  SELECT * FROM TBL_IL_INTERFACE WHERE Interface_Name LIKE '%006%'
+
+  SELECT * FROM TBL_IL_INBOUND_INTERFACE_PROCESS WHERE Incoming_Interface_ID = 4
+
+  SELECT * FROM TBL_IL_TXT_INTERFACE WHERE Interface_ID = 4
+
+  SELECT * FROM TBL_IL_XML_INTERFACE WHERE Interface_ID = 55
+
+  SELECT * FROM TBL_IL_WMOS_INBOUND WHERE Interface_Process_ID = 32
+
+
+
+INSERT INTO TBL_IL_TXT_INTERFACE (TXT_Interface_ID, Interface_ID, TXT_Interface_Column_Header,TXT_Interface_Sno,TXT_Interface_Column_Type, TXT_Interface_Column_Size, TXT_Interface_Validation_Flag,TXT_Interface_Column_Desc)
+
+VALUES (5669,4,'MISC2',22,'CHAR',20,0,'SAP_WMS_0006');
+
+
+
+INSERT INTO TBL_IL_XML_INTERFACE (XML_Interface_ID, Interface_ID, XML_Interface_Node_XPath,XML_Interface_Sno,XML_Interface_Node_Name, XML_Interface_Node_Type, XML_Interface_Node_Size,XML_Interface_Validation_Flag)
+
+VALUES (5200, 55,'StoreDistroBridge/StoreDistro',53,'StoreDistroFields/MiscField2','String',20,1);
+
+
+
+
+INSERT INTO TBL_IL_WMOS_INBOUND (WMOS_Inbound_ID,Interface_Process_ID,XML_Interface_ID,TXT_Interface_ID)
+
+vALUES (1807,32,5200,5669);
+

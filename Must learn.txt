@@ -1,0 +1,6 @@
+1. Delegates
+2. Reflection
+3. Generics
+4. Interfaces and abstract, sealed class, Partial class
+5. Static constructor (How a constructor would be invoked if the static class cannot create an instance)
+6. Data Injection, Recurring fn, Mediator Patterns
